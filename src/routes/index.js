@@ -44,6 +44,7 @@ router.get('/profile', isAuthenticated, (req, res) => {
 // Requerimos Fork
 const { fork } = require('child_process')
 
+//Ruta para desafio N° 28
 router.get('/info', (req, res) => {
     res.json({
         path: process.cwd(),
@@ -54,6 +55,7 @@ router.get('/info', (req, res) => {
     })
 })
 
+//Ruta para desafio N° 28
 router.get('/api/randoms', (req, res) => {
     const { cant } = req.query
 

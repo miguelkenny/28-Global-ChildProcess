@@ -1,5 +1,3 @@
-const { count } = require('../models/user')
-
 process.on('message', cant => {
   let numbersRandoms = [].sort()
   let uniqueNumbers = []
