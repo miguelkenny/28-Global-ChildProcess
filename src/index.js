@@ -1,11 +1,13 @@
 const express = require('express')
 const engine = require('ejs-mate')
 const routes = require('./routes/index')
+const http = require('http')
 const path = require('path')
 const passport = require('passport')
 const session = require('express-session')
 const flash = require('connect-flash')
 const parseArgs = require('minimist')
+const { Server: IOServer } = require('socket.io')
 
 //Inicializaciones
 const app = express()
@@ -20,9 +22,9 @@ const args = parseArgs(process.argv.slice(2), {
 		port: 8080,
 	},
 })
-console.log(args.port)
 
 //Congiguracion
+app.use(express.static(path.join(__dirname, 'views/js')))
 app.set('views', path.join(__dirname, 'views'))
 app.engine('ejs', engine)
 app.set('view engine', 'ejs')
@@ -51,7 +53,40 @@ app.use('/', routes)
 //Inicializar Servidor
 app.set('port', args.port || 3000)
 
+const server = http.createServer(app)
+const io = new IOServer(server)
+
+//Utilizamos Socket
+io.on('connection', (socket) => {
+    console.log('New Connection!!!', socket.id);
+
+    const prod = {nombre:"Aksksks", precio: 123, url:"http://google.com"}
+    let messages = {email:"a@email.com", message:"Hola", date: new Date().getTime()}
+
+    io.emit('server:products', prod)
+    io.emit('server:message', messages)
+
+    /* socket.on('server:products', async productsInfo => {
+
+        products.insertProduct(productsInfo)
+
+        const prod = products.getAll()
+        io.emit('server:products', prod)
+
+    })
+
+    socket.on('client:message', async messageInfo => {
+        const date = new Date(Date.now()).toLocaleString().replace(',', '');
+        messageInfo.date = date
+
+        mensajes.insertMessage(messageInfo)
+        let messages = await mensajes.getMessages()
+
+        io.emit('server:message', messages)
+    }) */
+})
+
 // Escuchando puerto con minimist
-app.listen(args.port, () => {
+server.listen(args.port, () => {
 	console.log(`Servidor escuchando puerto', ${args.port}`)
 })
